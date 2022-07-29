@@ -3,6 +3,7 @@ import Image from 'next/image'
 
 // Components
 import Sidebar from '../components/sidebar';
+import Feed from '../components/home/feed';
 
 // Styles
 const style = {
@@ -15,7 +16,7 @@ const Home = () => {
     <div className={style.wrapper}>
       <div className={style.content}>
         <Sidebar />
-        <h2>Feed</h2>
+        <Feed />
         <h2>Wdigets</h2>
       </div>
     </div>
