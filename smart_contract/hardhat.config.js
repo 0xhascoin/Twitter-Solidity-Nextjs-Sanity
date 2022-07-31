@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require('dotenv').config();
 
 let metamask_private_key = process.env.PRIVATE_KEY
 let alchemy_api_key = process.env.ALCHEMY_API_KEY
