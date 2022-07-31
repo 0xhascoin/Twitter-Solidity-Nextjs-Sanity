@@ -4,6 +4,7 @@ import Image from 'next/image'
 // Components
 import Sidebar from '../components/sidebar';
 import Feed from '../components/home/feed';
+import Widgets from '../components/widgets';
 
 // Styles
 const style = {
@@ -17,7 +18,7 @@ const Home = () => {
       <div className={style.content}>
         <Sidebar />
         <Feed />
-        <h2>Wdigets</h2>
+        <Widgets />
       </div>
     </div>
   )
