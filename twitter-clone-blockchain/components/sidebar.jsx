@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 // Icons
 import { FiMoreHorizontal, FiBell } from 'react-icons/fi';

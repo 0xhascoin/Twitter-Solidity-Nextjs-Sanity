@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 
 // Styles
 const style = {
@@ -10,12 +11,23 @@ const style = {
 }
 
 const SidebarOption = ({ text, Icon, isActive, setSelected, redirect }) => {
+    const router = useRouter();
+
+    const handleChange = () => {
+        setSelected(text);
+        if (redirect) router.push(redirect);
+    };
+
+
     return (
-        <div className={style.wrapper} onClick={() => setSelected(text)}>
+        <div
+            className={style.wrapper}
+            onClick={handleChange}
+        >
             <div className={style.iconContainer}>
                 <Icon />
             </div>
-            <div className={`${ isActive ? style.textActive : style.textGeneral }`}>
+            <div className={`${isActive ? style.textActive : style.textGeneral}`}>
                 {text}
             </div>
         </div>
