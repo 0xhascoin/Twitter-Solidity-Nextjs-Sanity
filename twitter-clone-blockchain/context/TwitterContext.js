@@ -18,6 +18,12 @@ export const TwitterProvider = ({ children }) => {
         checkIfWalletIsConnected();
     }, []);
 
+    useEffect(() => {
+        if (!currentAccount || appStatus !== "connected") return;
+        getCurrentUserDetails(currentAccount);
+        fetchTweets();
+    }, [currentAccount, appStatus]);
+
     // Checks if there is an active wallet connection.
     const checkIfWalletIsConnected = async () => {
         if (!window.ethereum) {
@@ -93,7 +99,7 @@ export const TwitterProvider = ({ children }) => {
                 _id: userWalletAddress,
                 name: "Unnamed",
                 isProfileImageNft: false,
-                profileImage: 'https://merriam-webster.com/assets/mw/images/article/art-wap-article-main/egg-3442-e1f6463624338504cd021bf23aef8441@1x.jpg',
+                profileImage: 'https://www.deccanherald.com/sites/dh/files/article_images/2020/05/19/604513-2135246437-1491282148.jpg',
                 walletAddress: userWalletAddress
             };
 

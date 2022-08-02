@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useRouter } from 'next/router';
+import { TwitterContext } from '../../context/TwitterContext';
 
 // Icons
 import { BsArrowLeftShort, BsReverseLayoutTextWindowReverse } from 'react-icons/bs';
@@ -24,9 +25,7 @@ const styles = {
 
 const ProfileHeader = () => {
     const router = useRouter();
-
-    const isProfileImageNft = false;
-    const currentAccount = '0x8hsdhjksdhjkhkjasd83823289713`819'
+    const { currentAccount, currentUser } = useContext(TwitterContext);
 
     return (
         <div className={styles.wrapper}>
@@ -35,17 +34,18 @@ const ProfileHeader = () => {
                     <BsArrowLeftShort />
                 </div>
                 <div className={styles.details}>
-                    <div className={styles.primary}>Hascoin</div>
-                    <div className={styles.secondary}>4 Tweets</div>
+                    <div className={styles.primary}>{currentUser.name}</div>
+                    {console.log("CURRENT USER", currentUser)}
+                    <div className={styles.secondary}>{currentUser?.tweets?.length} Tweets</div>
                 </div>
             </div>
             <div className={styles.coverPhotoContainer}>
-                <img className={styles.coverPhoto} src="https://lh3.googleusercontent.com/P7aOu9XmWj2DDZI_aYoinyYnDV5fEdlpuf9vgDNGhye5mvHb741GVjoQMAtBwcoOVXgjhjn-vMUcRj-VlyVNFTiQ1wUNIdwDRVVy=h600" alt="cover" />
+                <img className={styles.coverPhoto} src={currentUser.coverImage} alt="cover" />
             </div>
             <div className={styles.profileImageContainer}>
-                <div className={isProfileImageNft ? 'hex' : styles.profileImageContainer}>
-                    <img src='https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/themes/284832/settings_images/rLlCifhXRJiT0RoN2FjK_Logo_roundbackground_black.png'
-                        alt="" className={isProfileImageNft ? styles.profileImageNft : styles.profileImage} />
+                <div className={currentUser.isProfileImageNft ? 'hex' : styles.profileImageContainer}>
+                    <img src={currentUser.profileImage}
+                        alt="" className={currentUser.isProfileImageNft ? styles.profileImageNft : styles.profileImage} />
                 </div>
             </div>
             <div className={styles.details}>

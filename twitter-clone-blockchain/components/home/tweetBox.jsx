@@ -29,7 +29,7 @@ const styles = {
 const TweetBox = () => {
 
     const [tweetMessage, setTweetMessage] = useState('');
-    const { currentAccount } = useContext(TwitterContext);
+    const { currentAccount, currentUser, tweets, fetchTweets } = useContext(TwitterContext);
 
     const postTweet = async (event) => {
         event.preventDefault();
@@ -49,11 +49,16 @@ const TweetBox = () => {
         };
 
         await client.createIfNotExists(tweetDoc);
-        await client.patch(currentAccount).setIfMissing({ tweets: [] }).insert("after", "tweets[-1]", [{
+        await client
+        .patch(currentAccount)
+        .setIfMissing({ tweets: [] })
+        .insert("after", "tweets[-1]", [{
             _key: tweetId,
             _type: "reference",
             _ref: tweetId
-        }]);
+        }])
+        .commit();
+        await fetchTweets();
         setTweetMessage('');
     }
 
@@ -61,9 +66,9 @@ const TweetBox = () => {
         <div className={styles.wrapper}>
             <div className={styles.tweetBoxLeft}>
                 <img
-                    src="https://media.pitchfork.com/photos/5cd1b36b93a536266f1ed48f/1:1/w_800,h_800,c_limit/LightInTheAttic_PacificBreeze.jpg"
+                    src={currentUser.profileImage}
                     alt="img"
-                    className={styles.profileImage}
+                    className={currentUser.isProfileImageNft ? `${styles.profileImage} smallHex` : `${styles.profileImage}`}
                 />
             </div>
             <div className={styles.tweetBoxRight}>

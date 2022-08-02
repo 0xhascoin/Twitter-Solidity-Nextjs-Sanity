@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { TwitterContext } from '../context/TwitterContext';
 
 // Icons
 import { FiMoreHorizontal, FiBell } from 'react-icons/fi';
@@ -34,6 +36,9 @@ const style = {
 const Sidebar = ({ initialSelectedIcon = "Home" }) => {
 
     const [selected, setSelected] = useState(initialSelectedIcon);
+    const { currentAccount, currentUser, tweets } = useContext(TwitterContext);
+
+    const router = useRouter();
 
     return (
         <div className={style.wrapper}>
@@ -41,68 +46,75 @@ const Sidebar = ({ initialSelectedIcon = "Home" }) => {
                 <VscTwitter />
             </div>
             <div className={style.navContainer}>
-                <SidebarOption 
-                text="Home" 
-                Icon={selected === "Home" ? RiHome7Fill : RiHome7Line} 
-                isActive={Boolean(selected === "Home")}
-                setSelected={setSelected}
-                redirect={"/"} 
+                <SidebarOption
+                    text="Home"
+                    Icon={selected === "Home" ? RiHome7Fill : RiHome7Line}
+                    isActive={Boolean(selected === "Home")}
+                    setSelected={setSelected}
+                    redirect={"/"}
                 />
-                <SidebarOption 
-                text="Explore" 
-                Icon={selected === "Explore" ? FaHashtag : BiHash} 
-                isActive={Boolean(selected === "Explore")}
-                setSelected={setSelected}
-                redirect={"/explore"}  
+                <SidebarOption
+                    text="Explore"
+                    Icon={selected === "Explore" ? FaHashtag : BiHash}
+                    isActive={Boolean(selected === "Explore")}
+                    setSelected={setSelected}
+                    redirect={"/explore"}
                 />
-                <SidebarOption 
-                text="Notifications" 
-                Icon={selected === "Notifications" ? FaBell : FiBell} 
-                isActive={Boolean(selected === "Notifications")}
-                setSelected={setSelected}
-                redirect={"/notifications"}  
+                <SidebarOption
+                    text="Notifications"
+                    Icon={selected === "Notifications" ? FaBell : FiBell}
+                    isActive={Boolean(selected === "Notifications")}
+                    setSelected={setSelected}
+                    redirect={"/notifications"}
                 />
-                <SidebarOption 
-                text="Messages" 
-                Icon={selected === "Messages" ? HiMail : HiOutlineMail} 
-                isActive={Boolean(selected === "Messages")}
-                setSelected={setSelected}
-                redirect={"/messages"}  
+                <SidebarOption
+                    text="Messages"
+                    Icon={selected === "Messages" ? HiMail : HiOutlineMail}
+                    isActive={Boolean(selected === "Messages")}
+                    setSelected={setSelected}
+                    redirect={"/messages"}
                 />
-                <SidebarOption 
-                text="Bookmarks" 
-                Icon={selected === "Bookmarks" ? BsBookmarkFill : BsBookmark} 
-                isActive={Boolean(selected === "Bookmarks")}
-                setSelected={setSelected}
-                redirect={"/bookmarks"}  
+                <SidebarOption
+                    text="Bookmarks"
+                    Icon={selected === "Bookmarks" ? BsBookmarkFill : BsBookmark}
+                    isActive={Boolean(selected === "Bookmarks")}
+                    setSelected={setSelected}
+                    redirect={"/bookmarks"}
                 />
-                <SidebarOption 
-                text="Lists" 
-                Icon={selected === "Lists" ? RiFileList2Fill: FaRegListAlt } 
-                isActive={Boolean(selected === "Lists")}
-                setSelected={setSelected}
+                <SidebarOption
+                    text="Lists"
+                    Icon={selected === "Lists" ? RiFileList2Fill : FaRegListAlt}
+                    isActive={Boolean(selected === "Lists")}
+                    setSelected={setSelected}
                 />
-                <SidebarOption 
-                text="Profile" 
-                Icon={selected === "Profile" ? BsPersonFill : BsPerson} 
-                isActive={Boolean(selected === "Profile")}
-                setSelected={setSelected}
-                redirect={"/profile"}  
+                <SidebarOption
+                    text="Profile"
+                    Icon={selected === "Profile" ? BsPersonFill : BsPerson}
+                    isActive={Boolean(selected === "Profile")}
+                    setSelected={setSelected}
+                    redirect={"/profile"}
                 />
-                <SidebarOption 
-                text="More" 
-                Icon={CgMoreO} 
-                isActive={Boolean(selected === "More")}
-                setSelected={setSelected}
+                <SidebarOption
+                    text="More"
+                    Icon={CgMoreO}
+                    isActive={Boolean(selected === "More")}
+                    setSelected={setSelected}
                 />
-                <div className={style.tweetButton}>Mint</div>
+                <div
+                    className={style.tweetButton}
+                    onClick={() => router.push(`${router.pathname}?mint=${currentAccount}`)}
+                >
+                    Mint
+                </div>
             </div>
             <div className={style.profileButton}>
-                <div className={style.profileLeft}></div>
+                <div className={style.profileLeft}>
+                    <img src={currentUser.profileImage} alt="profile" className={currentUser.isProfileImageNft ? `${style.profileImage} smallHex` : `${style.profileImage}`} />
+                </div>
                 <div className={style.profileRight}></div>
                 <div className={style.details}>
-                    <div className={style.name}>hascoin</div>
-                    <div className={style.handle}>hascoin.eth</div>
+                    <div className={style.name}>{currentUser.name}</div>
+                    <div className={style.handle}>@{currentAccount.slice(0,6)}...{currentAccount.slice(-3)}</div>
                 </div>
                 <div className={style.moreContainer}>
                     <FiMoreHorizontal />
