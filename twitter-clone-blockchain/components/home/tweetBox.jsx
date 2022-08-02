@@ -1,4 +1,6 @@
-import React, { useState} from 'react';
+import React, { useState, useContext } from 'react';
+import { client } from '../../lib/client';
+import { TwitterContext } from '../../context/TwitterContext';
 
 // Icons
 import { BsCardImage, BsEmojiSmile } from 'react-icons/bs';
@@ -27,28 +29,50 @@ const styles = {
 const TweetBox = () => {
 
     const [tweetMessage, setTweetMessage] = useState('');
+    const { currentAccount } = useContext(TwitterContext);
 
-    const postTweet = (event) => {
+    const postTweet = async (event) => {
         event.preventDefault();
-        console.log("POST")
+        if (!tweetMessage) return;
+
+        const tweetId = `${currentAccount}_${Date.now()}`;
+        const tweetDoc = {
+            _type: "tweets",
+            _id: tweetId,
+            tweet: tweetMessage,
+            timestamp: new Date(Date.now()).toISOString(),
+            author: {
+                _key: tweetId,
+                _type: "reference",
+                _ref: currentAccount
+            }
+        };
+
+        await client.createIfNotExists(tweetDoc);
+        await client.patch(currentAccount).setIfMissing({ tweets: [] }).insert("after", "tweets[-1]", [{
+            _key: tweetId,
+            _type: "reference",
+            _ref: tweetId
+        }]);
+        setTweetMessage('');
     }
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.tweetBoxLeft}>
-                <img 
-                src="https://media.pitchfork.com/photos/5cd1b36b93a536266f1ed48f/1:1/w_800,h_800,c_limit/LightInTheAttic_PacificBreeze.jpg" 
-                alt="img" 
-                className={styles.profileImage} 
+                <img
+                    src="https://media.pitchfork.com/photos/5cd1b36b93a536266f1ed48f/1:1/w_800,h_800,c_limit/LightInTheAttic_PacificBreeze.jpg"
+                    alt="img"
+                    className={styles.profileImage}
                 />
             </div>
             <div className={styles.tweetBoxRight}>
                 <form onSubmit={postTweet}>
-                    <textarea 
-                    className={styles.inputField} 
-                    placeholder="What's happening?"
-                    value={tweetMessage}
-                    onChange={(e) => setTweetMessage(e.target.value)} 
+                    <textarea
+                        className={styles.inputField}
+                        placeholder="What's happening?"
+                        value={tweetMessage}
+                        onChange={(e) => setTweetMessage(e.target.value)}
                     />
                     <div className={styles.formLowerContainer}>
                         <div className={styles.iconsContainer}>

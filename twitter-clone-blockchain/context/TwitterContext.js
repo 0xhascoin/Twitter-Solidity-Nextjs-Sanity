@@ -8,6 +8,8 @@ export const TwitterContext = createContext();
 export const TwitterProvider = ({ children }) => {
     const [appStatus, setAppStatus] = useState('loading');
     const [currentAccount, setCurrentAccount] = useState('');
+    const [tweets, setTweets] = useState([]);
+    const [currentUser, setCurrentUser] = useState({});
 
     const router = useRouter();
 
@@ -105,8 +107,59 @@ export const TwitterProvider = ({ children }) => {
         }
     };
 
+    const fetchTweets = async () => {
+        const query = `
+            *[_type == "tweets"]{
+                "author": author->{name, walletAddress, profileImage, isProfileImageNft},
+                tweet,
+                timestamp
+            }|order(timestamp desc)
+        `;
+
+        const sanityReponse = await client.fetch(query);
+        setTweets([]);
+        sanityReponse.forEach(async item => {
+            const newItem = {
+                tweet: item.tweet,
+                timestamp: item.timestamp,
+                author: {
+                    name: item.author.name,
+                    walletAddress: item.author.walletAddress,
+                    isProfileImageNft: item.author.isProfileImageNft,
+                    profileImage: item.author.profileImage
+                }
+            };
+            setTweets(prevState => [...prevState, newItem]);
+        });
+    };
+
+    const getCurrentUserDetails = async (userAccount = currentAccount) => {
+        if (appStatus !== "connected") return;
+        const query = `
+            *[_type == "users" && _id == "${userAccount}"]{
+                "tweets": tweets[]->{timestamp, tweet}|order(timestamp desc),
+                name,
+                profileImage,
+                isProfileImageNft,
+                coverImage,
+                walletAddress
+            }
+        `;
+
+        const sanityResponse = await client.fetch(query);
+
+        setCurrentUser({
+            tweets: sanityResponse[0].tweets,
+            name: sanityResponse[0].name,
+            profileImage: sanityResponse[0].profileImage,
+            isProfileImageNft: sanityResponse[0].isProfileImageNft,
+            coverImage: sanityResponse[0].coverImage,
+            walletAddress: sanityResponse[0].walletAddress,
+        })
+    }
+
     return (
-        <TwitterContext.Provider value={{ appStatus, currentAccount, connectToWallet }}>
+        <TwitterContext.Provider value={{ appStatus, currentAccount, connectToWallet, fetchTweets, tweets, currentUser, getCurrentUserDetails }}>
             {children}
         </TwitterContext.Provider>
     )
